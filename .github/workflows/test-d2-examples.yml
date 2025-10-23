@@ -249,15 +249,21 @@ jobs:
             d2-examples/*.txt
           if-no-files-found: ignore
 
+      - name: Prepare Pages content
+        if: github.event_name == 'push'
+        run: |
+          mkdir -p pages-content
+          cp report.html pages-content/index.html
+
       - name: Setup Pages
         if: github.event_name == 'push'
         uses: actions/configure-pages@v4
 
-      - name: Upload artifact
+      - name: Upload Pages artifact
         if: github.event_name == 'push'
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: 'pages-content'
 
       - name: Deploy to GitHub Pages
         if: github.event_name == 'push'
