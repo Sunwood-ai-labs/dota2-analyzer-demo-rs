@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D2 Examples Test Report</title>
+
+    <!-- Basecoat CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.2/dist/basecoat.cdn.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.2/dist/js/all.min.js" defer></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <style>
+        :root {
+            --success: 142.1 70.6% 45.3%;
+            --success-foreground: 151.1 83.2% 96.5%;
+            --warning: 38 92% 50%;
+            --warning-foreground: 26 83% 14%;
+        }
+
+        body {
+            background: radial-gradient(circle at top, hsl(var(--background)) 0%, hsl(var(--muted)) 120%);
+            color: hsl(var(--foreground));
+            min-height: 100vh;
+            padding: 1.5rem;
+            transition: background 0.3s ease;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .dashboard-header {
+            background: hsl(var(--card));
+            border-radius: 1rem;
+            padding: 2rem;
+            border: 1px solid hsl(var(--border));
+            box-shadow: 0 20px 45px -20px hsl(var(--border));
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+        }
+
+        .header-title {
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .header-title h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: hsl(var(--foreground));
+            margin-bottom: 0.75rem;
+        }
+
+        .header-meta {
+            color: hsl(var(--muted-foreground));
+            font-size: 0.875rem;
+        }
+
+        .theme-toggle.btn {
+            border-radius: 9999px;
+            padding-inline: 1rem;
+            background: hsl(var(--accent));
+            color: hsl(var(--accent-foreground));
+            border: 1px solid hsl(var(--border));
+        }
+
+        .theme-toggle.btn:hover {
+            background: hsl(var(--secondary));
+            color: hsl(var(--secondary-foreground));
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            border-radius: 1rem;
+            border: 1px solid hsl(var(--border));
+            background: hsl(var(--card));
+            color: hsl(var(--foreground));
+            box-shadow: inset 0 1px 0 hsl(var(--muted));
+        }
+
+        .stat-card-primary {
+            background: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+        }
+
+        .stat-card-gradient,
+        .stat-card-pass,
+        .stat-card-ok {
+            background: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+        }
+
+        .stat-card-muted {
+            background: hsl(var(--card));
+            color: hsl(var(--foreground));
+        }
+
+        .stat-card-success {
+            background: hsl(var(--success));
+            color: hsl(var(--success-foreground));
+        }
+
+        .stat-card-warning {
+            background: hsl(var(--warning));
+            color: hsl(var(--warning-foreground));
+        }
+
+        .stat-card-failed,
+        .stat-card-error,
+        .stat-card-destructive {
+            background: hsl(var(--destructive));
+            color: hsl(var(--destructive-foreground));
+        }
+
+        .stat-card > * {
+            color: inherit;
+        }
+
+        .stat-card .stat-label {
+            color: inherit;
+            opacity: 0.8;
+        }
+
+        .stat-value {
+            font-size: 2.35rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .section-card {
+            margin-bottom: 0;
+            border-radius: 1rem;
+            border: 1px solid hsl(var(--border));
+            background: hsl(var(--card));
+            padding: 1.75rem;
+        }
+
+        .section-title {
+            font-size: 1.35rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            color: hsl(var(--foreground));
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .test-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 0.85rem;
+            margin-bottom: 0.75rem;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            border: 1px solid hsl(var(--border));
+            background: hsl(var(--muted));
+            color: hsl(var(--foreground));
+        }
+
+        .test-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -15px hsl(var(--border));
+        }
+
+        .test-item-success {
+            border-color: hsl(var(--success));
+        }
+
+        .test-item-failed {
+            border-color: hsl(var(--destructive));
+        }
+
+        .test-status-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .test-status-success {
+            background: hsl(var(--success));
+            color: hsl(var(--success-foreground));
+        }
+
+        .test-status-failed {
+            background: hsl(var(--destructive));
+            color: hsl(var(--destructive-foreground));
+        }
+
+        .test-info {
+            flex: 1;
+        }
+
+        .test-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: hsl(var(--foreground));
+        }
+
+        .test-time {
+            color: hsl(var(--muted-foreground));
+            font-size: 0.875rem;
+        }
+
+        .chart-wrapper {
+            background: hsl(var(--card));
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid hsl(var(--border));
+        }
+
+        .chart-container {
+            position: relative;
+            height: 340px;
+            margin-top: 1rem;
+        }
+
+        .dashboard-footer {
+            text-align: center;
+            padding: 2rem 1rem 3rem;
+            color: hsl(var(--muted-foreground));
+            font-size: 0.875rem;
+        }
+
+        .dashboard-footer a {
+            color: hsl(var(--primary));
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        .badge-success {
+            background: hsl(var(--success) / 0.15);
+            color: hsl(var(--success));
+            border: 1px solid hsl(var(--success) / 0.4);
+        }
+
+        .badge-failed {
+            background: hsl(var(--destructive) / 0.15);
+            color: hsl(var(--destructive));
+            border: 1px solid hsl(var(--destructive) / 0.4);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header-title h1 {
+                font-size: 1.6rem;
+            }
+
+            .stat-value {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div class="header-content">
+                <div class="header-title">
+                    <h1>🎮 D2 Examples Test Report</h1>
+                    <p class="header-meta">Automated testing results for Dota 2 demo file analysis</p>
+                    <p class="header-meta" style="margin-top: 0.5rem;">📅 Generated: 2025-10-23 13:15:05 UTC</p>
+                </div>
+                <div>
+                    <button class="theme-toggle btn" aria-label="Toggle theme">
+                        <span class="theme-toggle-light">🌙</span>
+                        <span class="theme-toggle-dark">☀️</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="card stat-card stat-card-success">
+                <div class="stat-label">Overall Status</div>
+                <div class="stat-value">✓ PASSED</div>
+            </div>
+
+            <div class="card stat-card stat-card-primary">
+                <div class="stat-label">Tests Passed</div>
+                <div class="stat-value">5/5</div>
+            </div>
+
+            <div class="card stat-card stat-card-muted">
+                <div class="stat-label">Total Time</div>
+                <div class="stat-value">3.00s</div>
+            </div>
+
+            <div class="card stat-card stat-card-muted">
+                <div class="stat-label">Data Points</div>
+                <div class="stat-value">262,256</div>
+            </div>
+        </div>
+
+        <!-- Test Results Section -->
+        <div class="card section-card">
+            <div class="section-title">
+                📋 Test Results
+            </div>
+            <div class="test-results">
+                <div class="test-item test-item-success">
+    <div class="test-status-icon test-status-success">✓</div>
+    <div class="test-info">
+        <div class="test-name">chat</div>
+        <div class="test-time">⏱️ Execution time: 0.00s</div>
+    </div>
+    <span class="badge badge-success">SUCCESS</span>
+</div>
+
+<div class="test-item test-item-success">
+    <div class="test-status-icon test-status-success">✓</div>
+    <div class="test-info">
+        <div class="test-name">positions</div>
+        <div class="test-time">⏱️ Execution time: 2.00s</div>
+    </div>
+    <span class="badge badge-success">SUCCESS</span>
+</div>
+
+<div class="test-item test-item-success">
+    <div class="test-status-icon test-status-success">✓</div>
+    <div class="test-info">
+        <div class="test-name">combatlog</div>
+        <div class="test-time">⏱️ Execution time: 1.00s</div>
+    </div>
+    <span class="badge badge-success">SUCCESS</span>
+</div>
+
+<div class="test-item test-item-success">
+    <div class="test-status-icon test-status-success">✓</div>
+    <div class="test-info">
+        <div class="test-name">lifestate</div>
+        <div class="test-time">⏱️ Execution time: 0.00s</div>
+    </div>
+    <span class="badge badge-success">SUCCESS</span>
+</div>
+
+<div class="test-item test-item-success">
+    <div class="test-status-icon test-status-success">✓</div>
+    <div class="test-info">
+        <div class="test-name">wards</div>
+        <div class="test-time">⏱️ Execution time: 0.00s</div>
+    </div>
+    <span class="badge badge-success">SUCCESS</span>
+</div>
+
+            </div>
+        </div>
+
+        <!-- Positions Section (if any) -->
+        <div class="card section-card">
+    <div class="section-title">
+        🗺️ Positions Analysis
+    </div>
+    <div class="stats-grid">
+        <div class="card stat-card-gradient">
+            <div class="stat-label">Total Records</div>
+            <div class="stat-value">262,256</div>
+        </div>
+        <div class="card stat-card-gradient">
+            <div class="stat-label">Unique Players</div>
+            <div class="stat-value">10</div>
+        </div>
+        <div class="card stat-card-gradient">
+            <div class="stat-label">Duration</div>
+            <div class="stat-value">1747.2s</div>
+        </div>
+        <div class="card stat-card-gradient">
+            <div class="stat-label">Unique Entities</div>
+            <div class="stat-value">23</div>
+        </div>
+    </div>
+</div>
+
+
+        <!-- Execution Time Chart -->
+        <div class="card section-card">
+            <div class="section-title">
+                📊 Execution Time Analysis
+            </div>
+            <div class="chart-wrapper">
+                <div class="chart-container">
+                    <canvas id="timeChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="dashboard-footer">
+            <p>🤖 Generated with <a href="https://claude.com/claude-code">Claude Code</a></p>
+            <p style="margin-top: 0.5rem;">
+                <a href="https://github.com/Sunwood-ai-labs/dota2-analyzer-demo-rs">📦 View Repository</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Chart.js configuration
+        const timeData = {"labels": ["chat", "positions", "combatlog", "lifestate", "wards"], "values": [0, 2, 1, 0, 0]};
+
+        const ctx = document.getElementById('timeChart').getContext('2d');
+
+        const paletteVariables = ['--primary', '--secondary', '--accent', '--muted', '--destructive'];
+
+        const getComputedPalette = () => {
+            const style = getComputedStyle(document.documentElement);
+
+            const toHsl = (variable, fallback) => {
+                const value = style.getPropertyValue(variable).trim();
+                return value ? `hsl(${value})` : fallback;
+            };
+
+            const toHslAlpha = (variable, alpha, fallback) => {
+                const value = style.getPropertyValue(variable).trim();
+                return value ? `hsl(${value} / ${alpha})` : fallback;
+            };
+
+            const backgrounds = paletteVariables.map((variable) => toHslAlpha(variable, 0.8, 'rgba(59, 130, 246, 0.8)'));
+            const borders = paletteVariables.map((variable) => toHsl(variable, 'rgba(59, 130, 246, 1)'));
+
+            return { backgrounds, borders, toHsl, toHslAlpha };
+        };
+
+        const chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: timeData.labels,
+                datasets: [{
+                    label: 'Execution Time (seconds)',
+                    data: timeData.values,
+                    backgroundColor: [],
+                    borderColor: [],
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        padding: 12,
+                        borderRadius: 8,
+                        titleFont: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 13
+                        },
+                        callbacks: {
+                            label: function(context) {
+                                return 'Time: ' + context.parsed.y.toFixed(2) + 's';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {},
+                        ticks: {},
+                        title: {
+                            display: true,
+                            text: 'Seconds',
+                            font: {
+                                size: 13,
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {}
+                    }
+                }
+            }
+        });
+
+        const applyChartTheme = () => {
+            const { backgrounds, borders, toHsl, toHslAlpha } = getComputedPalette();
+            const dataset = chart.data.datasets[0];
+
+            dataset.backgroundColor = timeData.values.map((_, index) => backgrounds[index % backgrounds.length]);
+            dataset.borderColor = timeData.values.map((_, index) => borders[index % borders.length]);
+
+            const subtleForeground = toHslAlpha('--foreground', 0.7, 'rgba(15, 23, 42, 0.7)');
+            const gridColor = toHslAlpha('--border', 0.6, 'rgba(148, 163, 184, 0.4)');
+            const tooltipBg = toHslAlpha('--popover', 0.92, 'rgba(15, 23, 42, 0.92)');
+            const tooltipFg = toHsl('--popover-foreground', '#f8fafc');
+
+            chart.options.scales.y.grid.color = gridColor;
+            chart.options.scales.y.ticks.color = subtleForeground;
+            chart.options.scales.y.title.color = subtleForeground;
+            chart.options.scales.x.ticks.color = subtleForeground;
+
+            chart.options.plugins.tooltip.backgroundColor = tooltipBg;
+            chart.options.plugins.tooltip.titleColor = tooltipFg;
+            chart.options.plugins.tooltip.bodyColor = tooltipFg;
+
+            chart.update();
+        };
+
+        applyChartTheme();
+
+        // Update chart colors when theme changes
+        const observer = new MutationObserver((mutations) => {
+            for (const mutation of mutations) {
+                if (mutation.attributeName === 'class') {
+                    applyChartTheme();
+                    break;
+                }
+            }
+        });
+
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+    </script>
+</body>
+</html>
