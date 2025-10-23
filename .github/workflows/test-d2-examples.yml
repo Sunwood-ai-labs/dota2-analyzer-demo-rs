@@ -249,13 +249,16 @@ jobs:
             d2-examples/*.txt
           if-no-files-found: ignore
 
+      - name: Prepare GitHub Pages content
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          mkdir -p gh-pages-content
+          cp report.html gh-pages-content/
+
       - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
+          publish_dir: gh-pages-content
           publish_branch: gh-pages
-          include_files: |
-            report.html
-          destination_dir: .
