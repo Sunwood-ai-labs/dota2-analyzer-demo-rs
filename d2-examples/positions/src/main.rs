@@ -22,7 +22,7 @@ impl Default for Positions {
             initialized: false,
             // Radiant をデフォルト視点に
             pov_team: 2,
-            out_path: PathBuf::from("hero_stats.csv"),
+            out_path: PathBuf::from("viz/hero_stats.csv"),
         }
     }
 }
@@ -302,7 +302,7 @@ fn main() -> anyhow::Result<()> {
     let args = std::env::args().collect::<Vec<_>>();
     let Some(filepath) = args.get(1) else {
         eprintln!(
-            "Usage: {} <demofile> [--pov=2|3|radiant|dire] [--out=stats.csv]",
+            "Usage: {} <demofile> [--pov=2|3|radiant|dire] [--out=stats.csv]\n       (default output: viz/hero_stats.csv)",
             args[0]
         );
         return Ok(());
