@@ -103,14 +103,7 @@ jobs:
 
           # 結果をJSONに追加
           cd ..
-          python3 -c "
-import json
-with open('test_results.json', 'r') as f:
-    data = json.load(f)
-data['tests'].append({'name': 'chat', 'status': '$STATUS', 'time': $ELAPSED})
-with open('test_results.json', 'w') as f:
-    json.dump(data, f, indent=2)
-"
+          python3 -c "import json; data = json.load(open('test_results.json')); data['tests'].append({'name': 'chat', 'status': '$STATUS', 'time': $ELAPSED}); json.dump(data, open('test_results.json', 'w'), indent=2)"
 
       - name: Test positions example
         working-directory: d2-examples
@@ -139,14 +132,7 @@ with open('test_results.json', 'w') as f:
           ELAPSED=$((END_TIME - START_TIME))
 
           cd ..
-          python3 -c "
-import json
-with open('test_results.json', 'r') as f:
-    data = json.load(f)
-data['tests'].append({'name': 'positions', 'status': '$STATUS', 'time': $ELAPSED})
-with open('test_results.json', 'w') as f:
-    json.dump(data, f, indent=2)
-"
+          python3 -c "import json; data = json.load(open('test_results.json')); data['tests'].append({'name': 'positions', 'status': '$STATUS', 'time': $ELAPSED}); json.dump(data, open('test_results.json', 'w'), indent=2)"
 
       - name: Test combatlog example
         working-directory: d2-examples
@@ -168,14 +154,7 @@ with open('test_results.json', 'w') as f:
           ELAPSED=$((END_TIME - START_TIME))
 
           cd ..
-          python3 -c "
-import json
-with open('test_results.json', 'r') as f:
-    data = json.load(f)
-data['tests'].append({'name': 'combatlog', 'status': '$STATUS', 'time': $ELAPSED})
-with open('test_results.json', 'w') as f:
-    json.dump(data, f, indent=2)
-"
+          python3 -c "import json; data = json.load(open('test_results.json')); data['tests'].append({'name': 'combatlog', 'status': '$STATUS', 'time': $ELAPSED}); json.dump(data, open('test_results.json', 'w'), indent=2)"
 
       - name: Test lifestate example
         working-directory: d2-examples
@@ -197,14 +176,7 @@ with open('test_results.json', 'w') as f:
           ELAPSED=$((END_TIME - START_TIME))
 
           cd ..
-          python3 -c "
-import json
-with open('test_results.json', 'r') as f:
-    data = json.load(f)
-data['tests'].append({'name': 'lifestate', 'status': '$STATUS', 'time': $ELAPSED})
-with open('test_results.json', 'w') as f:
-    json.dump(data, f, indent=2)
-"
+          python3 -c "import json; data = json.load(open('test_results.json')); data['tests'].append({'name': 'lifestate', 'status': '$STATUS', 'time': $ELAPSED}); json.dump(data, open('test_results.json', 'w'), indent=2)"
 
       - name: Test wards example
         working-directory: d2-examples
@@ -226,14 +198,7 @@ with open('test_results.json', 'w') as f:
           ELAPSED=$((END_TIME - START_TIME))
 
           cd ..
-          python3 -c "
-import json
-with open('test_results.json', 'r') as f:
-    data = json.load(f)
-data['tests'].append({'name': 'wards', 'status': '$STATUS', 'time': $ELAPSED})
-with open('test_results.json', 'w') as f:
-    json.dump(data, f, indent=2)
-"
+          python3 -c "import json; data = json.load(open('test_results.json')); data['tests'].append({'name': 'wards', 'status': '$STATUS', 'time': $ELAPSED}); json.dump(data, open('test_results.json', 'w'), indent=2)"
 
       - name: Analyze test results
         run: |
