@@ -22,6 +22,9 @@ jobs:
   test-examples:
     name: Test D2 Examples with Demo File
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Checkout code
@@ -249,16 +252,17 @@ jobs:
             d2-examples/*.txt
           if-no-files-found: ignore
 
-      - name: Prepare GitHub Pages content
+      - name: Setup Pages
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: |
-          mkdir -p gh-pages-content
-          cp report.html gh-pages-content/
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
 
       - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: gh-pages-content
-          publish_branch: gh-pages
+        id: deployment
+        uses: actions/deploy-pages@v4
