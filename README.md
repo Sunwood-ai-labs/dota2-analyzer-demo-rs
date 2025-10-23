@@ -4,11 +4,26 @@
 
 ## CI/CD
 
-このリポジトリには、d2-examplesの動作を確認するための自動テストが設定されています。
+このリポジトリには、d2-examplesの動作を確認するための自動テストとレポート生成システムが設定されています。
+
+### 📊 機能
+
+- **自動テスト**: 全てのd2-examplesを自動的にテスト
+- **HTMLレポート**: [GitHub Pages](https://sunwood-ai-labs.github.io/dota2-analyzer-demo-rs/report.html)で詳細なテスト結果を公開
+- **PRコメント**: Pull Requestに自動的にテスト結果を追加
+- **統計分析**: positions.csvから詳細な統計情報を抽出
+- **実行時間計測**: 各サンプルのパフォーマンス測定
+
+### 🔧 設定
 
 - **ワークフロー**: `.github/workflows/test-d2-examples.yml`
 - **テストデモファイル**: [HuggingFace: dota2-sample-dem](https://huggingface.co/datasets/MakiAi/dota2-sample-dem/blob/main/auto-20251019-2017-start-maki.dem)
 - **テスト対象**: chat, positions, combatlog, lifestate, wards
+
+### 📈 レポート
+
+- **詳細レポート**: mainブランチにpushすると、[GitHub Pages](https://sunwood-ai-labs.github.io/dota2-analyzer-demo-rs/report.html)に自動デプロイ
+- **PRコメント**: Pull Requestには簡易的なテスト結果を自動コメント
 
 すべてのサンプルがデモファイルで正しく動作することを自動的に確認します。
 

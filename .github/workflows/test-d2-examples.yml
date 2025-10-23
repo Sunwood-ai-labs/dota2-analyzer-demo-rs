@@ -12,6 +12,12 @@ env:
   DEMO_URL: https://huggingface.co/datasets/MakiAi/dota2-sample-dem/resolve/main/auto-20251019-2017-start-maki.dem
   DEMO_FILE: test-replay.dem
 
+permissions:
+  contents: write
+  pull-requests: write
+  pages: write
+  id-token: write
+
 jobs:
   test-examples:
     name: Test D2 Examples with Demo File
@@ -25,6 +31,11 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
       - name: Cache cargo registry
         uses: actions/cache@v4
@@ -67,61 +78,196 @@ jobs:
           echo "Building all d2-examples..."
           cargo build --release --all
 
+      - name: Initialize test results
+        run: |
+          echo '{"tests": []}' > test_results.json
+
       - name: Test chat example
         working-directory: d2-examples
         run: |
           echo "=== Testing chat example ==="
-          cargo run --release --bin chat -- "../$DEMO_FILE" || {
+          START_TIME=$(date +%s)
+
+          if cargo run --release --bin chat -- "../$DEMO_FILE" > chat_output.log 2>&1; then
+            STATUS="success"
+            echo "Chat example completed successfully"
+          else
+            STATUS="failed"
             echo "Chat example failed"
+            cat chat_output.log
             exit 1
-          }
-          echo "Chat example completed successfully"
+          fi
+
+          END_TIME=$(date +%s)
+          ELAPSED=$((END_TIME - START_TIME))
+
+          # 結果をJSONに追加
+          cd ..
+          python3 -c "
+import json
+with open('test_results.json', 'r') as f:
+    data = json.load(f)
+data['tests'].append({'name': 'chat', 'status': '$STATUS', 'time': $ELAPSED})
+with open('test_results.json', 'w') as f:
+    json.dump(data, f, indent=2)
+"
 
       - name: Test positions example
         working-directory: d2-examples
         run: |
           echo "=== Testing positions example ==="
-          cargo run --release --bin positions -- "../$DEMO_FILE" || {
-            echo "Positions example failed"
-            exit 1
-          }
-          if [ -f "positions.csv" ]; then
-            echo "positions.csv generated successfully"
-            wc -l positions.csv
+          START_TIME=$(date +%s)
+
+          if cargo run --release --bin positions -- "../$DEMO_FILE" > positions_output.log 2>&1; then
+            if [ -f "positions.csv" ]; then
+              STATUS="success"
+              echo "positions.csv generated successfully"
+              wc -l positions.csv
+            else
+              STATUS="failed"
+              echo "positions.csv was not generated"
+              exit 1
+            fi
           else
-            echo "positions.csv was not generated"
+            STATUS="failed"
+            echo "Positions example failed"
+            cat positions_output.log
             exit 1
           fi
+
+          END_TIME=$(date +%s)
+          ELAPSED=$((END_TIME - START_TIME))
+
+          cd ..
+          python3 -c "
+import json
+with open('test_results.json', 'r') as f:
+    data = json.load(f)
+data['tests'].append({'name': 'positions', 'status': '$STATUS', 'time': $ELAPSED})
+with open('test_results.json', 'w') as f:
+    json.dump(data, f, indent=2)
+"
 
       - name: Test combatlog example
         working-directory: d2-examples
         run: |
           echo "=== Testing combatlog example ==="
-          cargo run --release --bin combatlog -- "../$DEMO_FILE" || {
+          START_TIME=$(date +%s)
+
+          if cargo run --release --bin combatlog -- "../$DEMO_FILE" > combatlog_output.log 2>&1; then
+            STATUS="success"
+            echo "Combatlog example completed successfully"
+          else
+            STATUS="failed"
             echo "Combatlog example failed"
+            cat combatlog_output.log
             exit 1
-          }
-          echo "Combatlog example completed successfully"
+          fi
+
+          END_TIME=$(date +%s)
+          ELAPSED=$((END_TIME - START_TIME))
+
+          cd ..
+          python3 -c "
+import json
+with open('test_results.json', 'r') as f:
+    data = json.load(f)
+data['tests'].append({'name': 'combatlog', 'status': '$STATUS', 'time': $ELAPSED})
+with open('test_results.json', 'w') as f:
+    json.dump(data, f, indent=2)
+"
 
       - name: Test lifestate example
         working-directory: d2-examples
         run: |
           echo "=== Testing lifestate example ==="
-          cargo run --release --bin lifestate -- "../$DEMO_FILE" || {
+          START_TIME=$(date +%s)
+
+          if cargo run --release --bin lifestate -- "../$DEMO_FILE" > lifestate_output.log 2>&1; then
+            STATUS="success"
+            echo "Lifestate example completed successfully"
+          else
+            STATUS="failed"
             echo "Lifestate example failed"
+            cat lifestate_output.log
             exit 1
-          }
-          echo "Lifestate example completed successfully"
+          fi
+
+          END_TIME=$(date +%s)
+          ELAPSED=$((END_TIME - START_TIME))
+
+          cd ..
+          python3 -c "
+import json
+with open('test_results.json', 'r') as f:
+    data = json.load(f)
+data['tests'].append({'name': 'lifestate', 'status': '$STATUS', 'time': $ELAPSED})
+with open('test_results.json', 'w') as f:
+    json.dump(data, f, indent=2)
+"
 
       - name: Test wards example
         working-directory: d2-examples
         run: |
           echo "=== Testing wards example ==="
-          cargo run --release --bin wards -- "../$DEMO_FILE" || {
+          START_TIME=$(date +%s)
+
+          if cargo run --release --bin wards -- "../$DEMO_FILE" > wards_output.log 2>&1; then
+            STATUS="success"
+            echo "Wards example completed successfully"
+          else
+            STATUS="failed"
             echo "Wards example failed"
+            cat wards_output.log
             exit 1
-          }
-          echo "Wards example completed successfully"
+          fi
+
+          END_TIME=$(date +%s)
+          ELAPSED=$((END_TIME - START_TIME))
+
+          cd ..
+          python3 -c "
+import json
+with open('test_results.json', 'r') as f:
+    data = json.load(f)
+data['tests'].append({'name': 'wards', 'status': '$STATUS', 'time': $ELAPSED})
+with open('test_results.json', 'w') as f:
+    json.dump(data, f, indent=2)
+"
+
+      - name: Analyze test results
+        run: |
+          echo "Analyzing test results..."
+          python3 .github/scripts/analyze_results.py test_results.json
+          cat test_results_analyzed.json
+
+      - name: Generate HTML report
+        run: |
+          echo "Generating HTML report..."
+          python3 .github/scripts/generate_report.py test_results_analyzed.json
+          ls -lh report.html
+
+      - name: Generate PR comment
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "Generating PR comment..."
+          python3 .github/scripts/generate_pr_comment.py test_results_analyzed.json
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const comment = fs.readFileSync('pr_comment.md', 'utf8');
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
 
       - name: Upload artifacts
         if: always()
@@ -129,6 +275,22 @@ jobs:
         with:
           name: test-outputs
           path: |
+            test_results.json
+            test_results_analyzed.json
+            report.html
+            pr_comment.md
             d2-examples/positions.csv
+            d2-examples/*.log
             d2-examples/*.txt
           if-no-files-found: ignore
+
+      - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          publish_branch: gh-pages
+          include_files: |
+            report.html
+          destination_dir: .
