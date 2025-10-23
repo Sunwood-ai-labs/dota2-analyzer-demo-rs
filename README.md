@@ -1,6 +1,17 @@
+<div align="center">
+
 # dota2-analyzer-demo-rs
 
 [![Test D2 Examples](https://github.com/Sunwood-ai-labs/dota2-analyzer-demo-rs/actions/workflows/test-d2-examples.yml/badge.svg)](https://github.com/Sunwood-ai-labs/dota2-analyzer-demo-rs/actions/workflows/test-d2-examples.yml)
+
+[![Rust](https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white)](https://www.rust-lang.org/)
+[![Protocol Buffers](https://img.shields.io/badge/Protocol_Buffers-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://protobuf.dev/)
+[![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)](https://github.com/features/actions)
+[![Dota 2](https://img.shields.io/badge/Dota_2-FF0000?style=for-the-badge&logo=dota2&logoColor=white)](https://www.dota2.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg?style=for-the-badge)](https://opensource.org/licenses/Apache-2.0)
+
+</div>
 
 Dota 2のリプレイファイル（.demファイル）を解析するためのRustライブラリおよびサンプル集です。Source 2エンジンのデモファイルフォーマットをパースし、ゲーム内の様々なイベントやエンティティ情報を抽出できます。
 
