@@ -249,32 +249,17 @@ jobs:
             d2-examples/*.txt
           if-no-files-found: ignore
 
-  deploy:
-    name: Deploy to GitHub Pages
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    needs: test-examples
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: test-outputs
-
       - name: Setup Pages
+        if: github.event_name == 'push'
         uses: actions/configure-pages@v4
 
       - name: Upload artifact
+        if: github.event_name == 'push'
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
 
       - name: Deploy to GitHub Pages
+        if: github.event_name == 'push'
         id: deployment
         uses: actions/deploy-pages@v4
