@@ -43,7 +43,7 @@ Dota 2のリプレイを解析する場合：
 
 ```toml
 [dependencies]
-source2-demo = { git = "https://github.com/Rupas1k/source2-demo", features = ["dota"] }
+source2-demo = { git = "https://github.com/Sunwood-ai-labs/dota2-analyzer-demo-rs", features = ["dota"] }
 ```
 
 Deadlockのリプレイを解析する場合：
