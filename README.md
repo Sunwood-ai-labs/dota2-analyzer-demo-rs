@@ -1,5 +1,17 @@
 # source2-demo
 
+[![Test D2 Examples](https://github.com/Sunwood-ai-labs/dota2-analyzer-demo-rs/actions/workflows/test-d2-examples.yml/badge.svg)](https://github.com/Sunwood-ai-labs/dota2-analyzer-demo-rs/actions/workflows/test-d2-examples.yml)
+
+## CI/CD
+
+このリポジトリには、d2-examplesの動作を確認するための自動テストが設定されています。
+
+- **ワークフロー**: `.github/workflows/test-d2-examples.yml`
+- **テストデモファイル**: [HuggingFace: dota2-sample-dem](https://huggingface.co/datasets/MakiAi/dota2-sample-dem/blob/main/auto-20251019-2017-start-maki.dem)
+- **テスト対象**: chat, positions, combatlog, lifestate, wards
+
+すべてのサンプルがデモファイルで正しく動作することを自動的に確認します。
+
 ## Installation
 
 Install for Dota 2 replays:
