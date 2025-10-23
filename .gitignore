@@ -5,3 +5,4 @@ target
 *.dem
 
 d2-examples/positions.csv
+*.csv
